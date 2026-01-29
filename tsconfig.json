@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "jsx": "react-jsx",
+    "lib": [
+      "esnext"
+    ],
+    "moduleResolution": "node",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "types": [
+      "jest",
+      "react",
+      "react-native"
+    ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "App.tsx",
+    "app.config.ts",
+    "app.json",
+    "index.js"
+  ],
+  "extends": "expo/tsconfig.base"
+}

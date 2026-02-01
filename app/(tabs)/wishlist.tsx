@@ -11,15 +11,15 @@ import { Course } from '@/types/domain';
 
 export default function WishlistScreen() {
   const router = useRouter();
-  const { data: courses } = useCourses();
+  const { data: coursesResult } = useCourses();
   const { data, isLoading } = useWishlist();
   const removeFromWishlist = useRemoveFromWishlist();
 
   const courseLookup = useMemo(() => {
     const map = new Map<string, Course>();
-    courses?.forEach((course) => map.set(course.id, course));
+    coursesResult?.items.forEach((course) => map.set(course.id, course));
     return map;
-  }, [courses]);
+  }, [coursesResult]);
 
   const wishlist = data ?? [];
 

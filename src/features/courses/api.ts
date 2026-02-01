@@ -20,8 +20,7 @@ export type PagedResult<T> = {
 
 export const fetchCourses = async (params: CourseSearchParams = {}) => {
   const response = await api.get<PagedResult<Course>>('/api/courses', { params });
-  // Return just the items array for backward compatibility
-  return response.data.items;
+  return response.data;
 };
 
 export type CourseDetailResponse = Course & {

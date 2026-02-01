@@ -11,14 +11,14 @@ import { Course, Visit } from '@/types/domain';
 
 export default function MyCoursesScreen() {
   const router = useRouter();
-  const { data: courses } = useCourses();
+  const { data: coursesResult } = useCourses();
   const { data, isLoading, refetch, isRefetching } = useVisitedCourses();
 
   const courseLookup = useMemo(() => {
     const map = new Map<string, Course>();
-    courses?.forEach((course) => map.set(course.id, course));
+    coursesResult?.items.forEach((course) => map.set(course.id, course));
     return map;
-  }, [courses]);
+  }, [coursesResult]);
 
   const visits = data ?? [];
 

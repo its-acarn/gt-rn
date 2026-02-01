@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   type CourseDetailResponse,
   type CourseSearchParams,
+  type PagedResult,
   fetchCourseDetail,
   fetchCourses
 } from './api';
@@ -22,7 +23,7 @@ const coursesKey = (params: CourseSearchParams) => [
 export const useCourses = (params?: CourseSearchParams) => {
   const normalizedParams = params ?? EMPTY_PARAMS;
 
-  return useQuery<Course[]>({
+  return useQuery<PagedResult<Course>>({
     queryKey: coursesKey(normalizedParams),
     queryFn: () => fetchCourses(normalizedParams)
   });

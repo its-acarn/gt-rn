@@ -23,10 +23,6 @@ export default function WishlistScreen() {
 
   const wishlist = data ?? [];
 
-  if (isLoading) {
-    return <CenteredSpinner message="Loading wishlist…" />;
-  }
-
   const handleRemove = useCallback(
     async (courseId: string) => {
       try {
@@ -59,6 +55,10 @@ export default function WishlistScreen() {
     },
     [courseLookup, handleRemove, router]
   );
+
+  if (isLoading) {
+    return <CenteredSpinner message="Loading wishlist…" />;
+  }
 
   return (
     <View style={styles.container}>

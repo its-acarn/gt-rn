@@ -22,10 +22,6 @@ export default function MyCoursesScreen() {
 
   const visits = data ?? [];
 
-  if (isLoading) {
-    return <CenteredSpinner message="Loading your courses…" />;
-  }
-
   const renderItem = useCallback(
     ({ item }: { item: Visit }) => {
       const course = courseLookup.get(item.courseId);
@@ -42,6 +38,10 @@ export default function MyCoursesScreen() {
   const handleAddVisit = useCallback(() => {
     router.push('/modal/add-visit');
   }, [router]);
+
+  if (isLoading) {
+    return <CenteredSpinner message="Loading your courses…" />;
+  }
 
   return (
     <View style={styles.container}>

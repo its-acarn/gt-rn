@@ -1,18 +1,12 @@
 import { useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { CenteredSpinner } from '@/components/CenteredSpinner';
+import { CenteredSpinner } from '@/components';
 import { useStatsOverview, useStatsTimeline } from '@/features/stats/hooks';
 import { useSync } from '@/features/sync/useSync';
 import { colors } from '@/theme/colors';
 
-export const StatsOverviewScreen = () => {
+export default function StatsScreen() {
   const { isSyncing, lastSyncAt, triggerSync } = useSync();
   const [groupBy, setGroupBy] = useState<'year' | 'month'>('year');
   const { data, isLoading } = useStatsOverview();
@@ -37,7 +31,9 @@ export const StatsOverviewScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.meta}>Last sync: {lastSyncAt ? new Date(lastSyncAt).toLocaleString() : 'Never'}</Text>
+      <Text style={styles.meta}>
+        Last sync: {lastSyncAt ? new Date(lastSyncAt).toLocaleString() : 'Never'}
+      </Text>
 
       <View style={styles.cardRow}>
         <StatCard label="Courses played" value={data.totalCourses.toString()} />
@@ -48,7 +44,9 @@ export const StatsOverviewScreen = () => {
         <StatCard label="Longest streak (months)" value={data.longestMonthStreak.toString()} />
         <StatCard
           label="Most recent round"
-          value={data.mostRecentVisitDate ? new Date(data.mostRecentVisitDate).toLocaleDateString() : '—'}
+          value={
+            data.mostRecentVisitDate ? new Date(data.mostRecentVisitDate).toLocaleDateString() : '—'
+          }
         />
       </View>
 
@@ -97,57 +95,59 @@ export const StatsOverviewScreen = () => {
       </View>
     </ScrollView>
   );
-};
+}
 
-const StatCard = ({ label, value }: { label: string; value: string }) => (
-  <View style={styles.statCard}>
-    <Text style={styles.statValue}>{value}</Text>
-    <Text style={styles.statLabel}>{label}</Text>
-  </View>
-);
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.statCard}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
   },
   content: {
     padding: 20,
-    gap: 16
+    gap: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text
+    color: colors.text,
   },
   subtitle: {
-    color: colors.muted
+    color: colors.muted,
   },
   meta: {
     color: colors.muted,
-    fontSize: 13
+    fontSize: 13,
   },
   syncButton: {
     backgroundColor: colors.primary,
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 10
+    paddingVertical: 10,
   },
   syncButtonDisabled: {
-    opacity: 0.7
+    opacity: 0.7,
   },
   syncButtonText: {
     color: '#fff',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   cardRow: {
     flexDirection: 'row',
-    gap: 12
+    gap: 12,
   },
   statCard: {
     flex: 1,
@@ -156,16 +156,16 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 6,
     borderWidth: 1,
-    borderColor: colors.border
+    borderColor: colors.border,
   },
   statValue: {
     fontSize: 22,
     fontWeight: '700',
-    color: colors.text
+    color: colors.text,
   },
   statLabel: {
     color: colors.muted,
-    fontSize: 13
+    fontSize: 13,
   },
   section: {
     backgroundColor: colors.surface,
@@ -173,50 +173,50 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
     borderWidth: 1,
-    borderColor: colors.border
+    borderColor: colors.border,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.text
+    color: colors.text,
   },
   timelineHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   toggleGroup: {
     flexDirection: 'row',
-    gap: 8
+    gap: 8,
   },
   toggleButton: {
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 10,
     paddingHorizontal: 12,
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   toggleButtonActive: {
     borderColor: colors.primary,
-    backgroundColor: colors.primary + '15'
+    backgroundColor: colors.primary + '15',
   },
   toggleLabel: {
     color: colors.muted,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   toggleLabelActive: {
-    color: colors.primary
+    color: colors.primary,
   },
   listItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   listLabel: {
     color: colors.text,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   listValue: {
-    color: colors.muted
-  }
+    color: colors.muted,
+  },
 });

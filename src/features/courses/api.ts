@@ -1,4 +1,4 @@
-import { api } from '@/api/client';
+import { api } from '@/services/api';
 import { Course, TeeBox } from '@/types/domain';
 
 export type CourseSearchParams = {
@@ -7,11 +7,21 @@ export type CourseSearchParams = {
   region?: string;
   near?: string; // lat,long
   radiusKm?: number;
+  skip?: number;
+  take?: number;
+};
+
+export type PagedResult<T> = {
+  items: T[];
+  total: number;
+  skip: number;
+  take: number;
 };
 
 export const fetchCourses = async (params: CourseSearchParams = {}) => {
-  const response = await api.get<Course[]>('/api/courses', { params });
-  return response.data;
+  const response = await api.get<PagedResult<Course>>('/api/courses', { params });
+  // Return just the items array for backward compatibility
+  return response.data.items;
 };
 
 export type CourseDetailResponse = Course & {

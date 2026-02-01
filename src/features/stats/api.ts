@@ -1,4 +1,4 @@
-import { api } from '@/api/client';
+import { api } from '@/services/api';
 
 export type StatsOverview = {
   totalCourses: number;

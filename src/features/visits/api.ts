@@ -1,4 +1,4 @@
-import { api } from '@/api/client';
+import { api } from '@/services/api';
 import { Visit } from '@/types/domain';
 
 export type VisitFilters = {

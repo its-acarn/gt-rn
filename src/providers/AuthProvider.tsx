@@ -9,7 +9,7 @@ import {
 } from 'react';
 import * as SecureStore from 'expo-secure-store';
 
-import { api, setAuthToken } from '@/api/client';
+import { api, setAuthToken } from '@/services/api';
 import { UserProfile } from '@/types/domain';
 
 const TOKEN_KEY = 'gt-rn-auth-token';

@@ -1,30 +1,17 @@
-import { useMemo } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import { NavigatorScreenParams, useNavigation } from '@react-navigation/native';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useCallback, useMemo } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { useRouter } from 'expo-router';
 
-import { CenteredSpinner } from '@/components/CenteredSpinner';
+import { CenteredSpinner } from '@/components';
 import { useCourses } from '@/features/courses/hooks';
 import { useVisitedCourses } from '@/features/visits/hooks';
-import { CoursesStackParamList, MainTabParamList, RootStackParamList } from '@/navigation/types';
 import { colors } from '@/theme/colors';
 import { Course, Visit } from '@/types/domain';
 
-type TabsNavigation = BottomTabNavigationProp<MainTabParamList, 'MyCoursesTab'>;
-type RootNavigation = NativeStackNavigationProp<RootStackParamList>;
-
-export const MyCoursesScreen = () => {
-  const tabsNavigation = useNavigation<TabsNavigation>();
-  const rootNavigation = useNavigation<RootNavigation>();
+export default function MyCoursesScreen() {
+  const router = useRouter();
   const { data: courses } = useCourses();
-
   const { data, isLoading, refetch, isRefetching } = useVisitedCourses();
 
   const courseLookup = useMemo(() => {
@@ -39,28 +26,22 @@ export const MyCoursesScreen = () => {
     return <CenteredSpinner message="Loading your courses…" />;
   }
 
-  const renderItem = ({ item }: { item: Visit }) => {
-    const course = courseLookup.get(item.courseId);
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => {
-          const params: NavigatorScreenParams<CoursesStackParamList> = {
-            screen: 'CourseDetail',
-            params: { courseId: item.courseId }
-          };
-          tabsNavigation.navigate('CoursesTab', params);
-        }}
-      >
-        <Text style={styles.cardTitle}>{course?.name ?? 'Unknown course'}</Text>
-        <Text style={styles.cardMeta}>Last visit {new Date(item.visitDate).toLocaleDateString()}</Text>
-      </TouchableOpacity>
-    );
-  };
+  const renderItem = useCallback(
+    ({ item }: { item: Visit }) => {
+      const course = courseLookup.get(item.courseId);
+      return (
+        <TouchableOpacity style={styles.card} onPress={() => router.push(`/course/${item.courseId}`)}>
+          <Text style={styles.cardTitle}>{course?.name ?? 'Unknown course'}</Text>
+          <Text style={styles.cardMeta}>Last visit {new Date(item.visitDate).toLocaleDateString()}</Text>
+        </TouchableOpacity>
+      );
+    },
+    [courseLookup, router]
+  );
 
-  const handleAddVisit = () => {
-    rootNavigation.navigate('AddVisitModal');
-  };
+  const handleAddVisit = useCallback(() => {
+    router.push('/modal/add-visit');
+  }, [router]);
 
   return (
     <View style={styles.container}>
@@ -74,7 +55,7 @@ export const MyCoursesScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <FlatList
+      <FlashList
         data={visits}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
@@ -95,12 +76,12 @@ export const MyCoursesScreen = () => {
       />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
   },
   header: {
     paddingHorizontal: 20,
@@ -108,30 +89,30 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   heading: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text
+    color: colors.text,
   },
   subtitle: {
-    color: colors.muted
+    color: colors.muted,
   },
   primaryButton: {
     backgroundColor: colors.primary,
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12
+    paddingVertical: 12,
   },
   primaryButtonText: {
     color: '#fff',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   listContent: {
     paddingHorizontal: 20,
     paddingBottom: 32,
-    gap: 16
+    gap: 16,
   },
   card: {
     backgroundColor: colors.surface,
@@ -139,30 +120,30 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    gap: 6
+    gap: 6,
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.text
+    color: colors.text,
   },
   cardMeta: {
-    color: colors.muted
+    color: colors.muted,
   },
   emptyState: {
     marginTop: 64,
     alignItems: 'center',
     gap: 12,
-    paddingHorizontal: 24
+    paddingHorizontal: 24,
   },
   emptyHeading: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.text
+    color: colors.text,
   },
   emptyCopy: {
     color: colors.muted,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   secondaryButton: {
     marginTop: 12,
@@ -170,10 +151,10 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12
+    paddingVertical: 12,
   },
   secondaryButtonText: {
     color: colors.primary,
-    fontWeight: '600'
-  }
+    fontWeight: '600',
+  },
 });

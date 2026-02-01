@@ -6,7 +6,7 @@
     "lib": [
       "esnext"
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
@@ -23,7 +23,7 @@
   },
   "include": [
     "src",
-    "App.tsx",
+    "app",
     "app.config.ts",
     "app.json",
     "index.js"

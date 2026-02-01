@@ -7,36 +7,36 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Link } from 'expo-router';
 
 import { useAuth } from '@/providers/AuthProvider';
 import { colors } from '@/theme/colors';
-import { AuthStackParamList } from '@/navigation/types';
 
-type LoginScreenNavigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
-
-export const LoginScreen = () => {
-  const navigation = useNavigation<LoginScreenNavigation>();
-  const { signIn } = useAuth();
+export default function RegisterScreen() {
+  const { register } = useAuth();
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!email || !password) {
-      Alert.alert('Missing information', 'Email and password are required.');
+    if (!displayName || !email || !password) {
+      Alert.alert('Missing information', 'All fields are required.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await signIn({ email: email.trim().toLowerCase(), password });
+      await register({
+        displayName: displayName.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      });
     } catch (error) {
-      Alert.alert('Unable to sign in', 'Check your credentials and try again.');
+      Alert.alert('Registration failed', 'Check your details and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -48,8 +48,17 @@ export const LoginScreen = () => {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Text style={styles.heading}>Welcome back</Text>
-        <Text style={styles.subtitle}>Log in to track your courses and visits.</Text>
+        <Text style={styles.heading}>Create an account</Text>
+        <Text style={styles.subtitle}>Start tracking your golf courses today.</Text>
+
+        <Text style={styles.label}>Display Name</Text>
+        <TextInput
+          style={styles.input}
+          textContentType="name"
+          value={displayName}
+          onChangeText={setDisplayName}
+          placeholder="Your name"
+        />
 
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -66,35 +75,37 @@ export const LoginScreen = () => {
         <TextInput
           style={styles.input}
           secureTextEntry
-          textContentType="password"
+          textContentType="newPassword"
           value={password}
           onChangeText={setPassword}
           placeholder="••••••••"
         />
 
-        <Pressable style={[styles.button, isSubmitting && styles.buttonDisabled]} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>{isSubmitting ? 'Signing in…' : 'Sign in'}</Text>
+        <Pressable
+          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          onPress={handleSubmit}
+        >
+          <Text style={styles.buttonText}>{isSubmitting ? 'Creating…' : 'Create account'}</Text>
         </Pressable>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Need an account?</Text>
-          <Pressable
-            onPress={() => navigation.navigate('Register')}
-            accessibilityRole="button"
-          >
-            <Text style={styles.link}>Create one</Text>
-          </Pressable>
+          <Text style={styles.footerText}>Already have an account?</Text>
+          <Link href="/(auth)/login" asChild>
+            <Pressable accessibilityRole="button">
+              <Text style={styles.link}>Sign in</Text>
+            </Pressable>
+          </Link>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   content: {
     marginHorizontal: 24,
@@ -102,22 +113,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 16,
     gap: 12,
-    elevation: 2
+    elevation: 2,
   },
   heading: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text
+    color: colors.text,
   },
   subtitle: {
     fontSize: 16,
     color: colors.muted,
-    marginBottom: 12
+    marginBottom: 12,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.muted
+    color: colors.muted,
   },
   input: {
     borderWidth: 1,
@@ -126,37 +137,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: Platform.select({ ios: 14, android: 12 }),
     fontSize: 16,
-    color: colors.text
+    color: colors.text,
   },
   button: {
     marginTop: 12,
     backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   buttonDisabled: {
-    opacity: 0.7
+    opacity: 0.7,
   },
   buttonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 17
+    fontSize: 17,
   },
   footer: {
     marginTop: 8,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8
+    gap: 8,
   },
   footerText: {
     color: colors.muted,
-    fontSize: 14
+    fontSize: 14,
   },
   link: {
     color: colors.primary,
     fontWeight: '600',
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 });

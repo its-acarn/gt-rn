@@ -84,10 +84,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setState((prev) => ({ ...prev, status: 'loading' }));
 
     try {
-      const response = await api.post('/api/auth/login', payload);
-      const { token, user } = response.data as { token: string; user: UserProfile };
+      // Backend returns { token, expiresAt, message } - no user object
+      const loginResponse = await api.post('/api/auth/login', payload);
+      const { token } = loginResponse.data as { token: string };
 
+      // Set token first so the /me request is authenticated
       setAuthToken(token);
+
+      // Fetch user profile
+      const userResponse = await api.get('/api/auth/me');
+      const backendUser = userResponse.data as { id: string; email: string; name: string };
+
+      // Map backend User to frontend UserProfile
+      const user: UserProfile = {
+        id: backendUser.id,
+        email: backendUser.email,
+        displayName: backendUser.name,
+        role: 'User', // Backend doesn't return role in /me, default to User
+        publicSlug: '' // Backend doesn't return publicSlug in /me
+      };
+
       await Promise.all([
         SecureStore.setItemAsync(TOKEN_KEY, token),
         SecureStore.setItemAsync(PROFILE_KEY, JSON.stringify(user))
@@ -105,22 +121,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setState((prev) => ({ ...prev, status: 'loading' }));
 
     try {
-      const response = await api.post('/api/auth/register', payload);
-      const { token, user } = response.data as { token: string; user: UserProfile };
+      // Backend endpoint is POST /api/user with { email, name, password }
+      const registerPayload = {
+        email: payload.email,
+        name: payload.displayName, // Frontend uses displayName, backend uses name
+        password: payload.password
+      };
 
-      setAuthToken(token);
-      await Promise.all([
-        SecureStore.setItemAsync(TOKEN_KEY, token),
-        SecureStore.setItemAsync(PROFILE_KEY, JSON.stringify(user))
-      ]);
+      // Create user - returns User object but no token
+      await api.post('/api/user', registerPayload);
 
-      setState({ status: 'authenticated', user, token });
+      // Now log in with the credentials
+      await handleSignIn({ email: payload.email, password: payload.password });
     } catch (error) {
       console.error('Registration failed', error);
       setState({ status: 'unauthenticated', user: null, token: null });
       throw error;
     }
-  }, []);
+  }, [handleSignIn]);
 
   const handleSignOut = useCallback(async () => {
     setAuthToken(null);
@@ -137,8 +155,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const response = await api.get('/api/me');
-      const user = response.data as UserProfile;
+      // Backend endpoint is GET /api/auth/me
+      const response = await api.get('/api/auth/me');
+      const backendUser = response.data as { id: string; email: string; name: string };
+
+      // Map backend User to frontend UserProfile
+      const user: UserProfile = {
+        id: backendUser.id,
+        email: backendUser.email,
+        displayName: backendUser.name,
+        role: 'User', // Backend doesn't return role in /me, default to User
+        publicSlug: '' // Backend doesn't return publicSlug in /me
+      };
+
       await SecureStore.setItemAsync(PROFILE_KEY, JSON.stringify(user));
       setState((prev) => ({ ...prev, user }));
     } catch (error) {
@@ -156,7 +185,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       signOut: handleSignOut,
       refreshProfile
     }),
-    [handleRegister, handleSignIn, handleSignOut, refreshProfile, state]
+    [handleSignIn, handleRegister, handleSignOut, refreshProfile, state]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { CenteredSpinner } from '@/components';
 import { useCourseDetail } from '@/features/courses/hooks';
@@ -42,9 +42,7 @@ export default function CourseDetailScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen options={{ title: 'Course', headerShown: true }} />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <Text style={styles.title}>{data.name}</Text>
         <Text style={styles.meta}>
           {data.address1}
@@ -90,7 +88,6 @@ export default function CourseDetailScreen() {
           )}
         </View>
       </ScrollView>
-    </>
   );
 }
 

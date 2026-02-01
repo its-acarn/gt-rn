@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -92,7 +92,18 @@ function NavigationHandler() {
     return <CenteredSpinner message="Loading your data..." />;
   }
 
-  return <Slot />;
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="course/[id]" options={{ headerShown: true, title: 'Course' }} />
+      <Stack.Screen name="modal/add-visit" options={{ presentation: 'modal', title: 'Log Visit' }} />
+    </Stack>
+  );
 }
 
 function RootLayoutContent() {
